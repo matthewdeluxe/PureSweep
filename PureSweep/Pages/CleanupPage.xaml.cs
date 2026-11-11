@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using PureSweep.Core;
 
 namespace PureSweep.Pages
@@ -13,6 +14,7 @@ namespace PureSweep.Pages
     {
         readonly List<JunkCategory> _cats = JunkCatalog.Create();
         bool _scanned, _busy;
+        const double CleanShare = 60;   // cleaning fills the progress bar to here; the refresh scan after it fills the rest
         bool _scanning;   // a scan the user may stop is running
         bool _stop;       // the user asked that scan to stop
         bool _done;       // just cleaned: show the result until the selection changes or a new scan starts
@@ -30,6 +32,32 @@ namespace PureSweep.Pages
                     UpdateTotal();
                 };
             UpdateDisk();
+        }
+
+        /// <summary>Moves the progress bar to a 0-100 value; jump = no glide, for the start of a run.</summary>
+        void Progress(double value, bool jump = false)
+        {
+            if (jump)
+            {
+                BeginAnimation(ShownProperty, null);
+                SetValue(ShownProperty, value);
+                ShowProgress(value);   // the callback is skipped when the value hasn't changed
+            }
+            else
+                BeginAnimation(ShownProperty, new DoubleAnimation(value, TimeSpan.FromMilliseconds(450))
+                {
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                });
+        }
+
+        // The progress currently drawn. Animated, so the bar and the percentage glide together.
+        static readonly DependencyProperty ShownProperty = DependencyProperty.Register("Shown", typeof(double), typeof(CleanupPage),
+            new PropertyMetadata(0.0, (d, e) => ((CleanupPage)d).ShowProgress((double)e.NewValue)));
+
+        void ShowProgress(double value)
+        {
+            WorkFill.Width = WorkTrack.ActualWidth * value / 100;
+            WorkPct.Text = Math.Round(value) + "%";
         }
 
         /// <summary>Sets what the round button says. It is the page's only primary action and changes in place.</summary>
@@ -71,7 +99,8 @@ namespace PureSweep.Pages
         void SetBusy(bool busy, string title = null, string status = null)
         {
             _busy = busy;
-            Ring.IsActive = busy;
+            WorkRow.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
+            DiskText.Visibility = DiskBar.Visibility = busy ? Visibility.Collapsed : Visibility.Visible;
             RescanBtn.IsEnabled = !busy;
             List.IsEnabled = !busy;
             if (title != null) TotalText.Text = title;
@@ -85,13 +114,24 @@ namespace PureSweep.Pages
             _done = false;
             _stop = false;
             _scanning = canStop;
-            SetBusy(true, "Scanning…");
-            if (canStop) SetMain("Stop");
-            foreach (JunkCategory c in _cats)
+            SetBusy(true, canStop ? "Scanning…" : "Finishing up…");
+            // A normal scan fills the whole bar. The refresh after a clean continues from where cleaning left it.
+            double from = canStop ? 0 : CleanShare;
+            if (canStop) { SetMain("Stop"); Progress(0, true); }
+            for (int i = 0; i < _cats.Count; i++)
             {
                 if (_stop) break;
+                JunkCategory c = _cats[i];
                 StatusText.Text = "Checking: " + c.Name;
                 await Task.Run(() => c.Scan());
+                Progress(from + (100 - from) * (i + 1) / _cats.Count);
+            }
+            if (!_stop)
+            {
+                // a quick scan can end before the bar has visibly moved, so let it glide to full before it disappears
+                _scanning = false;   // too late to stop; a click now is ignored because the page is still busy
+                Progress(100);
+                await Task.Delay(550);
             }
             _scanning = false;
             if (_stop)
@@ -135,7 +175,15 @@ namespace PureSweep.Pages
 
             SetBusy(true, "Cleaning…", "Removing selected junk files.");
             SetMain("Cleaning…", null, false);
-            long freed = await Task.Run(() => selected.Sum(c => c.Clean()));
+            Progress(0, true);
+            long freed = 0;
+            for (int i = 0; i < selected.Count; i++)
+            {
+                JunkCategory c = selected[i];
+                StatusText.Text = "Cleaning: " + c.Name;
+                freed += await Task.Run(() => c.Clean());
+                Progress(CleanShare * (i + 1) / selected.Count);
+            }
             SetBusy(false);
 
             AppSettings.LastCleanUtc = DateTime.UtcNow;

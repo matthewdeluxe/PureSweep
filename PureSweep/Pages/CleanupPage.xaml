@@ -35,6 +35,19 @@
                     <TextBlock x:Name="StatusText" Text="Press Scan to see how much space you can reclaim." Foreground="#EBFFFFFF" TextWrapping="Wrap" />
                     <TextBlock x:Name="DiskText" FontSize="12" Foreground="#EBFFFFFF" Margin="0,16,0,4" />
                     <ProgressBar x:Name="DiskBar" Maximum="100" Height="6" Width="380" HorizontalAlignment="Left" Foreground="White" Background="#40FFFFFF" />
+                    <!-- scan / clean progress; takes the disk bar's place while working -->
+                    <Grid x:Name="WorkRow" Width="430" HorizontalAlignment="Left" Margin="0,18,0,0" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid x:Name="WorkTrack" Height="8" VerticalAlignment="Center">
+                            <Border CornerRadius="4" Background="#40FFFFFF" />
+                            <Border x:Name="WorkFill" CornerRadius="4" Background="White" HorizontalAlignment="Left" Width="0" />
+                        </Grid>
+                        <TextBlock x:Name="WorkPct" Grid.Column="1" Text="0%" MinWidth="42" Margin="12,0,0,0" TextAlignment="Right"
+                                   FontSize="15" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+                    </Grid>
                     <!-- quiet secondary link; the round button is the page's one primary action -->
                     <Button x:Name="RescanBtn" HorizontalAlignment="Left" Margin="0,14,0,0" Visibility="Collapsed" Click="Rescan_Click"
                             Cursor="Hand" Foreground="White" AutomationProperties.Name="Scan again">
@@ -59,7 +72,6 @@
                     </Button>
                 </StackPanel>
                 <Grid Grid.Column="1" Width="196" Height="196" VerticalAlignment="Center">
-                    <ui:ProgressRing x:Name="Ring" Width="196" Height="196" Foreground="White" IsActive="False" />
                     <!-- The one primary action. It changes in place: Scan -> Stop -> Clean (size) -> Cleaning -> Rescan. -->
                     <Button x:Name="MainBtn" Style="{StaticResource RoundPush3D}" Click="Main_Click"
                             HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.Name="Scan">

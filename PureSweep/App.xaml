@@ -20,14 +20,14 @@
             </Style>
 
             <!-- Push button: a flat face sitting on a thin darker lip; pressing slides the face down onto the lip.
-                 Deliberately subtle (3px lip, no gloss) so it sits with the flat WinUI controls around it. -->
+                 Deliberately subtle (2px lip, no gloss) so it sits with the flat WinUI controls around it. -->
             <ControlTemplate x:Key="Push3DTemplate" TargetType="Button">
                 <Grid x:Name="Root" SnapsToDevicePixels="True" Background="Transparent">
                     <!-- lip (the button's side wall) -->
-                    <Border Background="{TemplateBinding BorderBrush}" CornerRadius="7" Margin="0,3,0,0" />
-                    <Border Background="#59000000" CornerRadius="7" Margin="0,3,0,0" />
+                    <Border Background="{TemplateBinding BorderBrush}" CornerRadius="7" Margin="0,2,0,0" />
+                    <Border Background="#59000000" CornerRadius="7" Margin="0,2,0,0" />
                     <!-- face -->
-                    <Grid x:Name="Face" Margin="0,0,0,3">
+                    <Grid x:Name="Face" Margin="0,0,0,2">
                         <Grid.RenderTransform>
                             <TranslateTransform />
                         </Grid.RenderTransform>
@@ -48,7 +48,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Storyboard.TargetName="Face" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                                     To="3" Duration="0:0:0.05" />
+                                                     To="2" Duration="0:0:0.05" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.EnterActions>
@@ -105,9 +105,9 @@
             <!-- Big circular plunger used for the main Scan / Clean action -->
             <ControlTemplate x:Key="RoundPush3DTemplate" TargetType="Button">
                 <Grid x:Name="Root" Background="Transparent">
-                    <Ellipse Fill="{TemplateBinding BorderBrush}" Margin="0,5,0,0" />
-                    <Ellipse Fill="#40000000" Margin="0,5,0,0" />
-                    <Grid x:Name="Face" Margin="0,0,0,5">
+                    <Ellipse Fill="{TemplateBinding BorderBrush}" Margin="0,3,0,0" />
+                    <Ellipse Fill="#40000000" Margin="0,3,0,0" />
+                    <Grid x:Name="Face" Margin="0,0,0,3">
                         <Grid.RenderTransform>
                             <TranslateTransform />
                         </Grid.RenderTransform>
@@ -127,7 +127,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Storyboard.TargetName="Face" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                                     To="5" Duration="0:0:0.06" />
+                                                     To="3" Duration="0:0:0.06" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </Trigger.EnterActions>
@@ -158,7 +158,21 @@
                 <Setter Property="FontSize" Value="24" />
                 <Setter Property="FontWeight" Value="Bold" />
                 <Setter Property="Width" Value="148" />
-                <Setter Property="Height" Value="153" />
+                <Setter Property="Height" Value="151" />
+                <!-- keyboard focus: a round outline instead of the default dotted square -->
+                <Setter Property="FocusVisualStyle">
+                    <Setter.Value>
+                        <Style>
+                            <Setter Property="Control.Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Ellipse Stroke="White" StrokeThickness="2" Margin="-5,-5,-5,-2" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
                 <Setter Property="Cursor" Value="Hand" />
             </Style>
 
