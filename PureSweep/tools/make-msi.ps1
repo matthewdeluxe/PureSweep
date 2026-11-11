@@ -64,12 +64,21 @@ Sql 'CREATE TABLE `RemoveFile` (`FileKey` CHAR(72) NOT NULL, `Component_` CHAR(7
 Sql 'CREATE TABLE `Upgrade` (`UpgradeCode` CHAR(38) NOT NULL, `VersionMin` CHAR(20), `VersionMax` CHAR(20), `Language` CHAR(255), `Attributes` LONG NOT NULL, `Remove` CHAR(255), `ActionProperty` CHAR(72) NOT NULL PRIMARY KEY `UpgradeCode`, `VersionMin`, `VersionMax`, `Language`, `Attributes`)'
 Sql 'CREATE TABLE `InstallExecuteSequence` (`Action` CHAR(72) NOT NULL, `Condition` CHAR(255), `Sequence` SHORT PRIMARY KEY `Action`)'
 Sql 'CREATE TABLE `InstallUISequence` (`Action` CHAR(72) NOT NULL, `Condition` CHAR(255), `Sequence` SHORT PRIMARY KEY `Action`)'
+# UI tables (progress, finish and error dialogs)
+Sql 'CREATE TABLE `Dialog` (`Dialog` CHAR(72) NOT NULL, `HCentering` SHORT NOT NULL, `VCentering` SHORT NOT NULL, `Width` SHORT NOT NULL, `Height` SHORT NOT NULL, `Attributes` LONG, `Title` CHAR(128) LOCALIZABLE, `Control_First` CHAR(50) NOT NULL, `Control_Default` CHAR(50), `Control_Cancel` CHAR(50) PRIMARY KEY `Dialog`)'
+Sql 'CREATE TABLE `Control` (`Dialog_` CHAR(72) NOT NULL, `Control` CHAR(50) NOT NULL, `Type` CHAR(20) NOT NULL, `X` SHORT NOT NULL, `Y` SHORT NOT NULL, `Width` SHORT NOT NULL, `Height` SHORT NOT NULL, `Attributes` LONG, `Property` CHAR(72), `Text` LONGCHAR LOCALIZABLE, `Control_Next` CHAR(50), `Help` CHAR(50) LOCALIZABLE PRIMARY KEY `Dialog_`, `Control`)'
+Sql 'CREATE TABLE `ControlEvent` (`Dialog_` CHAR(72) NOT NULL, `Control_` CHAR(50) NOT NULL, `Event` CHAR(50) NOT NULL, `Argument` CHAR(255) NOT NULL, `Condition` CHAR(255), `Ordering` SHORT PRIMARY KEY `Dialog_`, `Control_`, `Event`, `Argument`, `Condition`)'
+Sql 'CREATE TABLE `ControlCondition` (`Dialog_` CHAR(72) NOT NULL, `Control_` CHAR(50) NOT NULL, `Action` CHAR(50) NOT NULL, `Condition` CHAR(255) NOT NULL PRIMARY KEY `Dialog_`, `Control_`, `Action`, `Condition`)'
+Sql 'CREATE TABLE `EventMapping` (`Dialog_` CHAR(72) NOT NULL, `Control_` CHAR(50) NOT NULL, `Event` CHAR(50) NOT NULL, `Attribute` CHAR(50) NOT NULL PRIMARY KEY `Dialog_`, `Control_`, `Event`)'
+Sql 'CREATE TABLE `TextStyle` (`TextStyle` CHAR(72) NOT NULL, `FaceName` CHAR(32) NOT NULL, `Size` SHORT NOT NULL, `Color` LONG, `StyleBits` SHORT PRIMARY KEY `TextStyle`)'
+Sql 'CREATE TABLE `CheckBox` (`Property` CHAR(72) NOT NULL, `Value` CHAR(64) PRIMARY KEY `Property`)'
+Sql 'CREATE TABLE `CustomAction` (`Action` CHAR(72) NOT NULL, `Type` SHORT NOT NULL, `Source` CHAR(72), `Target` CHAR(255) PRIMARY KEY `Action`)'
 
 # --- properties (ALLUSERS is deliberately absent => per-user install, no elevation)
 $props = [ordered]@{
     ProductCode = $productCode; ProductName = 'PureSweep'; ProductVersion = $Version; Manufacturer = 'PureSweep'
     ProductLanguage = '1033'; UpgradeCode = $upgradeCode; ARPPRODUCTICON = 'app.ico'; ARPNOMODIFY = '1'; ARPNOREPAIR = '1'
-    SecureCustomProperties = 'OLDVERSIONFOUND'
+    SecureCustomProperties = 'OLDVERSIONFOUND'; DefaultUIFont = 'DlgFont'; LAUNCHAPP = '1'
 }
 foreach ($k in $props.Keys) { Sql "INSERT INTO ``Property`` (``Property``, ``Value``) VALUES ('$k', '$($props[$k])')" }
 
@@ -116,8 +125,67 @@ $exec = [ordered]@{
     InstallFinalize = 6600
 }
 foreach ($k in $exec.Keys) { Sql "INSERT INTO ``InstallExecuteSequence`` (``Action``, ``Sequence``) VALUES ('$k', $($exec[$k]))" }
-$ui = [ordered]@{ FindRelatedProducts = 25; CostInitialize = 800; FileCost = 900; CostFinalize = 1000; ExecuteAction = 1300 }
+$ui = [ordered]@{
+    FatalErrorDialog = -3; ExitDialog = -1
+    FindRelatedProducts = 25; CostInitialize = 800; FileCost = 900; CostFinalize = 1000; ProgressDialog = 1299; ExecuteAction = 1300
+}
 foreach ($k in $ui.Keys) { Sql "INSERT INTO ``InstallUISequence`` (``Action``, ``Sequence``) VALUES ('$k', $($ui[$k]))" }
+
+# --- dialogs: progress while installing, a finish screen with "Launch PureSweep", and an error screen.
+# Only shown with full UI (double-click); msiexec /qb and /qn skip them. Text must not contain apostrophes (SQL quoting).
+function Row([string]$table, [System.Collections.Specialized.OrderedDictionary]$cols) {
+    $names = @(); $vals = @()
+    foreach ($k in $cols.Keys) {
+        if ($null -eq $cols[$k]) { continue }
+        $names += "``$k``"
+        $vals  += if ($cols[$k] -is [int]) { "$($cols[$k])" } else { "'$($cols[$k])'" }
+    }
+    Sql "INSERT INTO ``$table`` ($($names -join ', ')) VALUES ($($vals -join ', '))"
+}
+function Dlg($name, $w, $h, $attr, $first, $default, $cancel) {
+    Row Dialog ([ordered]@{ Dialog = $name; HCentering = 50; VCentering = 50; Width = $w; Height = $h; Attributes = $attr
+        Title = '[ProductName] Setup'; Control_First = $first; Control_Default = $default; Control_Cancel = $cancel })
+}
+function Ctl($dlg, $name, $type, $x, $y, $w, $h, $attr, $text, $prop = $null, $next = $null) {
+    Row Control ([ordered]@{ Dialog_ = $dlg; Control = $name; Type = $type; X = $x; Y = $y; Width = $w; Height = $h
+        Attributes = $attr; Property = $prop; Text = $text; Control_Next = $next })
+}
+function Hide($dlg, $ctl, $cond) { Row ControlCondition ([ordered]@{ Dialog_ = $dlg; Control_ = $ctl; Action = 'Hide'; Condition = $cond }) }
+
+Row TextStyle ([ordered]@{ TextStyle = 'DlgFont';  FaceName = 'Segoe UI'; Size = 9;  StyleBits = 0 })
+Row TextStyle ([ordered]@{ TextStyle = 'DlgTitle'; FaceName = 'Segoe UI'; Size = 13; StyleBits = 1 })
+Row CheckBox ([ordered]@{ Property = 'LAUNCHAPP'; Value = '1' })
+# 210 = run an installed file (18), asynchronously without waiting (+128), ignoring its exit code (+64)
+Row CustomAction ([ordered]@{ Action = 'LaunchApp'; Type = 210; Source = 'filPureSweepExe'; Target = '' })
+
+# Attributes: 1 visible, 2 modal / enabled (3 = both), 65537 = visible progress bar drawn as blocks
+Dlg 'ProgressDialog' 300 110 1 'Status' $null $null
+Ctl 'ProgressDialog' 'Title'    'Text'        20 15 260 22 3 '{\DlgTitle}Installing [ProductName]'
+Ctl 'ProgressDialog' 'TitleRm'  'Text'        20 15 260 22 3 '{\DlgTitle}Removing [ProductName]'
+Ctl 'ProgressDialog' 'Status'   'Text'        20 45 260 14 3 'Please wait...'
+Ctl 'ProgressDialog' 'Progress' 'ProgressBar' 20 65 260 12 65537 'Progress'
+Hide 'ProgressDialog' 'Title' 'REMOVE="ALL"'
+Hide 'ProgressDialog' 'TitleRm' 'NOT REMOVE="ALL"'
+Row EventMapping ([ordered]@{ Dialog_ = 'ProgressDialog'; Control_ = 'Status';   Event = 'ActionText';  Attribute = 'Text' })
+Row EventMapping ([ordered]@{ Dialog_ = 'ProgressDialog'; Control_ = 'Progress'; Event = 'SetProgress'; Attribute = 'Progress' })
+
+Dlg 'ExitDialog' 300 140 3 'Finish' 'Finish' 'Finish'
+Ctl 'ExitDialog' 'Title'   'Text'     20 15 260 22 3 '{\DlgTitle}[ProductName] is installed'
+Ctl 'ExitDialog' 'TitleRm' 'Text'     20 15 260 22 3 '{\DlgTitle}[ProductName] was removed'
+Ctl 'ExitDialog' 'Body'    'Text'     20 45 260 28 3 'You can open it any time from the Start menu.'
+Ctl 'ExitDialog' 'BodyRm'  'Text'     20 45 260 28 3 '[ProductName] has been removed from this PC.'
+Ctl 'ExitDialog' 'Launch'  'CheckBox' 20 80 200 14 3 'Launch [ProductName]' 'LAUNCHAPP' 'Finish'
+Ctl 'ExitDialog' 'Finish'  'PushButton' 214 110 66 17 3 'Finish' $null 'Launch'
+foreach ($c in 'Title', 'Body', 'Launch') { Hide 'ExitDialog' $c 'REMOVE="ALL"' }
+foreach ($c in 'TitleRm', 'BodyRm')       { Hide 'ExitDialog' $c 'NOT REMOVE="ALL"' }
+Row ControlEvent ([ordered]@{ Dialog_ = 'ExitDialog'; Control_ = 'Finish'; Event = 'DoAction';  Argument = 'LaunchApp'; Condition = 'LAUNCHAPP = 1 AND NOT REMOVE="ALL"'; Ordering = 1 })
+Row ControlEvent ([ordered]@{ Dialog_ = 'ExitDialog'; Control_ = 'Finish'; Event = 'EndDialog'; Argument = 'Return';    Condition = '1'; Ordering = 2 })
+
+Dlg 'FatalErrorDialog' 300 120 3 'Close' 'Close' 'Close'
+Ctl 'FatalErrorDialog' 'Title' 'Text'       20 15 260 22 3 '{\DlgTitle}Setup did not finish'
+Ctl 'FatalErrorDialog' 'Body'  'Text'       20 45 260 28 3 '[ProductName] could not be installed. Nothing on this PC was changed.'
+Ctl 'FatalErrorDialog' 'Close' 'PushButton' 214 90 66 17 3 'Close'
+Row ControlEvent ([ordered]@{ Dialog_ = 'FatalErrorDialog'; Control_ = 'Close'; Event = 'EndDialog'; Argument = 'Exit'; Condition = '1'; Ordering = 1 })
 
 # --- summary information
 $si = MsiGet $db SummaryInformation @(20)

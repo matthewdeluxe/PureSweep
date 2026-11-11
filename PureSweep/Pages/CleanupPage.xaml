@@ -35,13 +35,39 @@
                     <TextBlock x:Name="StatusText" Text="Press Scan to see how much space you can reclaim." Foreground="#EBFFFFFF" TextWrapping="Wrap" />
                     <TextBlock x:Name="DiskText" FontSize="12" Foreground="#EBFFFFFF" Margin="0,16,0,4" />
                     <ProgressBar x:Name="DiskBar" Maximum="100" Height="6" Width="380" HorizontalAlignment="Left" Foreground="White" Background="#40FFFFFF" />
-                    <Button x:Name="RescanBtn" Content="Scan again" Style="{StaticResource Push3DHero}" FontSize="13" Padding="16,6,16,7"
-                            HorizontalAlignment="Left" Margin="0,16,0,0" Visibility="Collapsed" Click="Rescan_Click" />
+                    <!-- quiet secondary link; the round button is the page's one primary action -->
+                    <Button x:Name="RescanBtn" HorizontalAlignment="Left" Margin="0,14,0,0" Visibility="Collapsed" Click="Rescan_Click"
+                            Cursor="Hand" Foreground="White" AutomationProperties.Name="Scan again">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <TextBlock x:Name="T" Text="Scan again" FontSize="13" Foreground="{TemplateBinding Foreground}"
+                                           TextDecorations="Underline" Background="Transparent" Opacity="0.85" />
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="T" Property="Opacity" Value="1" />
+                                    </Trigger>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter TargetName="T" Property="Opacity" Value="1" />
+                                        <Setter TargetName="T" Property="FontWeight" Value="SemiBold" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="T" Property="Opacity" Value="0.4" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </StackPanel>
                 <Grid Grid.Column="1" Width="196" Height="196" VerticalAlignment="Center">
                     <ui:ProgressRing x:Name="Ring" Width="196" Height="196" Foreground="White" IsActive="False" />
-                    <Button x:Name="MainBtn" Content="Scan" Style="{StaticResource RoundPush3D}" Click="Main_Click"
-                            HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <!-- The one primary action. It changes in place: Scan -> Stop -> Clean (size) -> Cleaning -> Rescan. -->
+                    <Button x:Name="MainBtn" Style="{StaticResource RoundPush3D}" Click="Main_Click"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.Name="Scan">
+                        <StackPanel>
+                            <TextBlock x:Name="MainLabel" Text="Scan" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="MainSub" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" Visibility="Collapsed" />
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </Grid>
         </Grid>

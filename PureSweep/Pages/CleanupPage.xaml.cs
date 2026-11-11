@@ -13,6 +13,9 @@ namespace PureSweep.Pages
     {
         readonly List<JunkCategory> _cats = JunkCatalog.Create();
         bool _scanned, _busy;
+        bool _scanning;   // a scan the user may stop is running
+        bool _stop;       // the user asked that scan to stop
+        bool _done;       // just cleaned: show the result until the selection changes or a new scan starts
 
         public CleanupPage()
         {
@@ -20,8 +23,23 @@ namespace PureSweep.Pages
             List.ItemsSource = _cats;
             AdminBar.Visibility = Util.IsAdmin ? Visibility.Collapsed : Visibility.Visible;
             foreach (JunkCategory c in _cats)
-                c.PropertyChanged += (s, e) => { if (e.PropertyName == nameof(JunkCategory.SelectedBytes)) UpdateTotal(); };
+                c.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName != nameof(JunkCategory.SelectedBytes) || _busy) return;
+                    _done = false;
+                    UpdateTotal();
+                };
             UpdateDisk();
+        }
+
+        /// <summary>Sets what the round button says. It is the page's only primary action and changes in place.</summary>
+        void SetMain(string label, string sub = null, bool enabled = true)
+        {
+            MainLabel.Text = label;
+            MainSub.Text = sub ?? "";
+            MainSub.Visibility = sub == null ? Visibility.Collapsed : Visibility.Visible;
+            MainBtn.IsEnabled = enabled;
+            System.Windows.Automation.AutomationProperties.SetName(MainBtn, sub == null ? label : label + " " + sub);
         }
 
         long Selected => _cats.Sum(c => c.SelectedBytes);
@@ -45,32 +63,48 @@ namespace PureSweep.Pages
             StatusText.Text = total > 0
                 ? "selected and ready to clean. Open a category to choose exactly what goes."
                 : "Nothing selected. Tick a category, or scan again.";
-            MainBtn.Content = total > 0 ? "Clean" : "Scan";
+            if (total > 0) SetMain("Clean", Util.Size(total)); else SetMain("Rescan");
+            // with nothing selected the round button already rescans, so the link would be a duplicate
+            RescanBtn.Visibility = total > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         void SetBusy(bool busy, string title = null, string status = null)
         {
             _busy = busy;
             Ring.IsActive = busy;
-            MainBtn.IsEnabled = !busy;
             RescanBtn.IsEnabled = !busy;
             List.IsEnabled = !busy;
             if (title != null) TotalText.Text = title;
             if (status != null) StatusText.Text = status;
         }
 
-        public async Task ScanAsync()
+        /// <param name="canStop">Let the round button stop the scan. Off for the refresh that follows a clean.</param>
+        public async Task ScanAsync(bool canStop = true)
         {
             if (_busy) return;
+            _done = false;
+            _stop = false;
+            _scanning = canStop;
             SetBusy(true, "Scanning…");
+            if (canStop) SetMain("Stop");
             foreach (JunkCategory c in _cats)
             {
+                if (_stop) break;
                 StatusText.Text = "Checking: " + c.Name;
                 await Task.Run(() => c.Scan());
             }
+            _scanning = false;
+            if (_stop)
+            {
+                // sizes are only partly refreshed, so don't offer to clean from them
+                _scanned = false;
+                SetBusy(false, "Scan stopped", "Press Scan to start again.");
+                SetMain("Scan");
+                RescanBtn.Visibility = Visibility.Collapsed;
+                return;
+            }
             _scanned = true;
             SetBusy(false);
-            RescanBtn.Visibility = Visibility.Visible;
             UpdateTotal();
         }
 
@@ -81,7 +115,13 @@ namespace PureSweep.Pages
 
         async void Main_Click(object sender, RoutedEventArgs e)
         {
-            if (_scanned && Selected > 0) await CleanAsync();
+            if (_scanning)
+            {
+                // takes effect once the category being checked finishes
+                _stop = true;
+                SetMain("Stopping…", null, false);
+            }
+            else if (_scanned && !_done && Selected > 0) await CleanAsync();
             else await ScanAsync();
         }
 
@@ -94,6 +134,7 @@ namespace PureSweep.Pages
                 return;
 
             SetBusy(true, "Cleaning…", "Removing selected junk files.");
+            SetMain("Cleaning…", null, false);
             long freed = await Task.Run(() => selected.Sum(c => c.Clean()));
             SetBusy(false);
 
@@ -102,12 +143,16 @@ namespace PureSweep.Pages
             AppSettings.TotalFreed += freed;
             AppSettings.Save();
 
-            await ScanAsync();
+            await ScanAsync(false);
             UpdateDisk();
+            // result state: the button offers a rescan until the user changes the selection
+            _done = true;
             TotalText.Text = Util.Size(freed) + " freed";
             StatusText.Text = freed < expected
                 ? "Some files were in use or protected and were left in place."
                 : "Your PC is clean.";
+            SetMain("Rescan");
+            RescanBtn.Visibility = Visibility.Collapsed;
         }
 
         void Expand_Click(object sender, RoutedEventArgs e)

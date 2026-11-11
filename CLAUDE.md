@@ -18,6 +18,9 @@ targeting pack. There is no .NET SDK, NuGet restore or WiX involved:
   `PureSweep/dist/PureSweepSetup.exe`. `bin`, `obj` and `dist` are git-ignored.
 - `tools/make-msi.ps1` builds the MSI with the Windows Installer COM API and `makecab.exe`.
   Each build gets a new ProductCode; the fixed UpgradeCode makes it replace any installed version.
+- The MSI has its own minimal UI (Dialog/Control tables in `make-msi.ps1`): a progress dialog,
+  a finish dialog with a "Launch PureSweep" checkbox (`LAUNCHAPP`, custom action `LaunchApp`),
+  and an error dialog. Text there can't contain apostrophes because of the SQL quoting.
 - `tools/make-icon.ps1` regenerates `app.ico` (only runs if the icon is missing).
 
 Prefer the MSI for deployment. The owner's antivirus deleted `PureSweepSetup.exe` (an unsigned
