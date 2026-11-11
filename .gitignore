@@ -1,0 +1,10 @@
+# Build output (recreated by PureSweep\build.ps1)
+PureSweep/bin/
+PureSweep/obj/
+PureSweep/dist/
+PureSweep/Setup/obj/
+
+# Editor and OS clutter
+.vs/
+*.user
+Thumbs.db

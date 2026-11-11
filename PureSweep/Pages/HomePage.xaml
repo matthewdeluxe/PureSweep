@@ -1,0 +1,128 @@
+<UserControl x:Class="PureSweep.Pages.HomePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:c="clr-namespace:PureSweep.Controls">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,20,32,24">
+            <c:Hero Title="Home" Subtitle="Your PC at a glance." Glyph="&#xE80F;">
+                <Button Content="Smart Scan" Style="{StaticResource Push3DHero}" Click="SmartScan_Click" />
+            </c:Hero>
+
+            <!-- live gauges -->
+            <UniformGrid Columns="3" Margin="-6,6,-6,0">
+                <Border Style="{StaticResource Card}" Margin="6" Padding="16,20">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Grid Width="132" Height="132">
+                            <c:RingGauge x:Name="DiskRing" Stroke="#FF2BA4F5" />
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock x:Name="DiskPct" Text="–" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
+                                <TextBlock Text="used" Style="{StaticResource MutedCaption}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="System drive" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,12,0,0" />
+                        <TextBlock x:Name="DiskDetail" Style="{StaticResource MutedCaption}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="6" Padding="16,20">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Grid Width="132" Height="132">
+                            <c:RingGauge x:Name="MemRing" Stroke="#FF9B7BE0" />
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock x:Name="MemPct" Text="–" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
+                                <TextBlock Text="in use" Style="{StaticResource MutedCaption}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Memory" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,12,0,0" />
+                        <TextBlock x:Name="MemDetail" Style="{StaticResource MutedCaption}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="6" Padding="16,20">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Grid Width="132" Height="132">
+                            <c:RingGauge x:Name="CpuRing" Stroke="#FF3CCB7F" />
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock x:Name="CpuPct" Text="–" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
+                                <TextBlock Text="busy" Style="{StaticResource MutedCaption}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Processor" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,12,0,0" />
+                        <TextBlock x:Name="CpuDetail" Style="{StaticResource MutedCaption}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- shortcuts into each tool, showing its current state -->
+            <UniformGrid Columns="2" Margin="-6,0,-6,0">
+                <Button Style="{StaticResource TileButton}" Margin="6" Tag="cleanup" Click="Tile_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="44" Height="44" CornerRadius="10" Background="#FF0078D4">
+                            <ui:FontIcon Glyph="&#xEA99;" FontSize="20" Foreground="White" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="14,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="CleanValue" Text="Not cleaned yet" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="CleanLabel" Text="Last cleanup" Style="{StaticResource MutedCaption}" />
+                        </StackPanel>
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </Grid>
+                </Button>
+                <Button Style="{StaticResource TileButton}" Margin="6" Tag="uninstaller" Click="Tile_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="44" Height="44" CornerRadius="10" Background="#FFE8452C">
+                            <ui:FontIcon Glyph="&#xE71D;" FontSize="20" Foreground="White" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="14,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="AppsValue" Text="Counting…" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="Installed programs" Style="{StaticResource MutedCaption}" />
+                        </StackPanel>
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </Grid>
+                </Button>
+                <Button Style="{StaticResource TileButton}" Margin="6" Tag="startup" Click="Tile_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="44" Height="44" CornerRadius="10" Background="#FF0A8F7A">
+                            <ui:FontIcon Glyph="&#xE7E8;" FontSize="20" Foreground="White" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="14,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="StartupValue" Text="–" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="Startup programs" Style="{StaticResource MutedCaption}" />
+                        </StackPanel>
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </Grid>
+                </Button>
+                <Button Style="{StaticResource TileButton}" Margin="6" Tag="hibernation" Click="Tile_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="44" Height="44" CornerRadius="10" Background="#FF6B4FC8">
+                            <ui:FontIcon Glyph="&#xE708;" FontSize="20" Foreground="White" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="14,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="HiberValue" Text="–" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="Hibernation file" Style="{StaticResource MutedCaption}" />
+                        </StackPanel>
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </Grid>
+                </Button>
+            </UniformGrid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
