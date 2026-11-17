@@ -181,12 +181,15 @@ namespace PureSweep.Core
                 if (_checked && _files > 0 && SHEmptyRecycleBin(IntPtr.Zero, null, 7) == 0) freed = _bytes;
                 return freed;
             }
+            // Re-apply the age guard now: a file may have been written to since the scan.
+            DateTime cutoff = Cutoff;
             foreach (JunkGroup g in _groups.Where(g => g.IsChecked))
                 foreach (string f in g.Found)
                 {
                     try
                     {
                         var fi = new FileInfo(f);
+                        if (fi.LastWriteTimeUtc > cutoff) continue;
                         long len = fi.Length;
                         if ((fi.Attributes & FileAttributes.ReadOnly) != 0) fi.Attributes = FileAttributes.Normal;
                         fi.Delete();
@@ -194,7 +197,6 @@ namespace PureSweep.Core
                     }
                     catch { /* in use or protected: leave it */ }
                 }
-            DateTime cutoff = Cutoff;
             foreach (string d in _pruneDirs) PruneEmpty(d, cutoff);
             return freed;
         }
@@ -316,7 +318,7 @@ namespace PureSweep.Core
                 new JunkCategory
                 {
                     Name = "Windows Update cache", Glyph = "", Color = "#8764B8", NeedsAdmin = true,
-                    Description = "Downloaded update packages that have already been installed.",
+                    Description = "Downloaded update packages. Windows downloads again anything it still needs.",
                     Roots = { new JunkRoot(@"%SystemRoot%\SoftwareDistribution\Download") }
                 },
                 new JunkCategory
@@ -355,7 +357,7 @@ namespace PureSweep.Core
                 },
                 new JunkCategory
                 {
-                    Name = "Recycle Bin", Glyph = "", Color = "#CA5010", IsRecycleBin = true,
+                    Name = "Recycle Bin", Glyph = "", Color = "#CA5010", IsRecycleBin = true, IsChecked = false,   // off by default: it is the safety net for deleted files
                     Description = "Files you have already deleted, on all drives."
                 }
             };

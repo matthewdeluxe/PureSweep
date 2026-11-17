@@ -22,13 +22,7 @@ namespace PureSweep.Pages
 
         void Refresh()
         {
-            long size = 0;
-            try
-            {
-                var f = new FileInfo(Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "hiberfil.sys"));
-                if (f.Exists) size = f.Length;
-            }
-            catch { }
+            long size = Util.HibernationFileSize();
 
             try
             {

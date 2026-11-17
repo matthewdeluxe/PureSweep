@@ -9,6 +9,48 @@ namespace PureSweep.Core
         /// <summary>Overwrites and deletes a file or a whole folder. Returns the number of files destroyed.</summary>
         public static int Shred(string path, int passes)
         {
+            if (IsProtected(path))
+                throw new InvalidOperationException("Refusing to shred a drive root, a Windows or Program Files folder, or a user profile folder.");
+            return ShredCore(path, passes);
+        }
+
+        /// <summary>
+        /// True for a drive or share root, anything inside the Windows folder, and any folder that is (or contains)
+        /// Program Files, ProgramData or a user profile. Shredding one of these by mistake would wreck the PC.
+        /// </summary>
+        static bool IsProtected(string path)
+        {
+            string full;
+            try { full = Path.GetFullPath(path).TrimEnd('\\'); }
+            catch { return true; }
+
+            string root = Path.GetPathRoot(full) ?? "";
+            if (full.Length == 0 || string.Equals(root.TrimEnd('\\'), full, StringComparison.OrdinalIgnoreCase)) return true;
+
+            string candidate = full + "\\";
+            string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows).TrimEnd('\\') + "\\";
+            if (candidate.StartsWith(windows, StringComparison.OrdinalIgnoreCase)) return true;
+
+            string profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            foreach (string p in new[]
+            {
+                windows,
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                profile,
+                string.IsNullOrEmpty(profile) ? null : Path.GetDirectoryName(profile)   // C:\Users
+            })
+            {
+                if (string.IsNullOrEmpty(p)) continue;
+                // protected if the chosen path is this folder or one of its parents
+                if ((p.TrimEnd('\\') + "\\").StartsWith(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
+        static int ShredCore(string path, int passes)
+        {
             if (File.Exists(path)) { ShredFile(path, passes); return 1; }
             if (!Directory.Exists(path)) return 0;
 
@@ -17,7 +59,7 @@ namespace PureSweep.Core
 
             int count = 0;
             foreach (FileInfo f in dir.GetFiles()) { ShredFile(f.FullName, passes); count++; }
-            foreach (DirectoryInfo d in dir.GetDirectories()) count += Shred(d.FullName, passes);
+            foreach (DirectoryInfo d in dir.GetDirectories()) count += ShredCore(d.FullName, passes);
             dir.Attributes = FileAttributes.Directory;
             dir.Delete();
             return count;

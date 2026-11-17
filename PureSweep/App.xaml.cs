@@ -17,7 +17,7 @@ namespace PureSweep
         {
             DispatcherUnhandledException += (s, a) =>
             {
-                try { File.WriteAllText(Path.Combine(AppSettings.Folder, "crash.log"), a.Exception.ToString()); } catch { }
+                try { File.AppendAllText(Path.Combine(AppSettings.Folder, "crash.log"), DateTime.Now.ToString("u") + Environment.NewLine + a.Exception + Environment.NewLine + Environment.NewLine); } catch { }
                 MessageBox.Show(a.Exception.Message, "PureSweep", MessageBoxButton.OK, MessageBoxImage.Error);
                 a.Handled = true;
             };

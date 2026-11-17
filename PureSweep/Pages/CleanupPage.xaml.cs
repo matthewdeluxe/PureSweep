@@ -170,7 +170,7 @@ namespace PureSweep.Pages
             List<JunkCategory> selected = _cats.Where(c => c.SelectedBytes > 0).ToList();
             long expected = selected.Sum(c => c.SelectedBytes);
             if (!await Util.Confirm("Clean selected items?",
-                $"About {Util.Size(expected)} in {selected.Count} {(selected.Count == 1 ? "category" : "categories")} will be permanently deleted. This can't be undone.", "Clean"))
+                $"About {Util.Size(expected)} will be permanently deleted from: {string.Join(", ", selected.Select(c => c.Name))}. This can't be undone.", "Clean"))
                 return;
 
             SetBusy(true, "Cleaning…", "Removing selected junk files.");

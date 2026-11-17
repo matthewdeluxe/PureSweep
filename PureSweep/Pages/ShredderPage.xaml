@@ -10,7 +10,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <c:Hero Title="Shredder" Subtitle="Overwrite files with random data before deleting them, so they can't be recovered." Glyph="&#xE75C;" From="#FFFF7A59" To="#FFC2185B" />
+        <c:Hero Title="Shredder" Subtitle="Overwrite files with random data before deleting them. Most effective on hard disks; SSDs and cloud-synced folders can keep other copies." Glyph="&#xE75C;" From="#FFFF7A59" To="#FFC2185B" />
 
         <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,12,0,0" Padding="8" AllowDrop="True" Drop="Zone_Drop" DragOver="Zone_DragOver">
             <Grid>

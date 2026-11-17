@@ -59,7 +59,8 @@ namespace PureSweep.Pages
         async void Shred_Click(object sender, RoutedEventArgs e)
         {
             if (!await Util.Confirm("Shred " + _items.Count + (_items.Count == 1 ? " item?" : " items?"),
-                "The selected files and everything inside the selected folders will be overwritten and deleted. This can't be undone, and nothing goes to the Recycle Bin.", "Shred"))
+                "The selected files and everything inside the selected folders will be overwritten and deleted. This can't be undone, and nothing goes to the Recycle Bin.\n\n"
+                + string.Join("\n", _items.Take(5)) + (_items.Count > 5 ? "\n...and " + (_items.Count - 5) + " more" : ""), "Shred"))
                 return;
 
             int passes = int.Parse((string)((ComboBoxItem)Passes.SelectedItem).Tag);
