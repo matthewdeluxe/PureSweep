@@ -12,7 +12,7 @@ struct SnapshotsView: View {
     var body: some View {
         VStack(spacing: 16) {
             PageHeader(title: "Snapshots", subtitle: "Time Machine local snapshots and purgeable space on your startup disk.",
-                       symbol: "clock.arrow.trianglehead.counterclockwise.rotate.90",
+                       symbol: "clock.arrow.circlepath",
                        colors: [Color(red: 0.42, green: 0.31, blue: 0.78), Color(red: 0.25, green: 0.25, blue: 0.70)]) {
                 if !snaps.isEmpty {
                     Button("Delete All…") { confirm = snaps }.buttonStyle(HeaderButtonStyle()).disabled(working)

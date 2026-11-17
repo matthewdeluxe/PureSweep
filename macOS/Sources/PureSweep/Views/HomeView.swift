@@ -30,7 +30,7 @@ struct HomeView: View {
                     tile(.cleanup, "sparkles", .blue, cleanValue, cleanLabel)
                     tile(.uninstaller, "xmark.app.fill", .red, appsText, "Installed apps")
                     tile(.loginItems, "power", .teal, loginText, "Login items")
-                    tile(.snapshots, "clock.arrow.trianglehead.counterclockwise.rotate.90", .indigo, snapText, "Time Machine local snapshots")
+                    tile(.snapshots, "clock.arrow.circlepath", .indigo, snapText, "Time Machine local snapshots")
                 }
 
             Spacer(minLength: 0)

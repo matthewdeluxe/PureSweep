@@ -131,7 +131,7 @@ final class AppModel {
             case .uninstaller: return "xmark.app"
             case .loginItems: return "power"
             case .largeFiles: return "doc.viewfinder"
-            case .snapshots: return "clock.arrow.trianglehead.counterclockwise.rotate.90"
+            case .snapshots: return "clock.arrow.circlepath"
             case .shredder: return "scissors"
             }
         }

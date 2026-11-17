@@ -55,7 +55,13 @@ The default build is ad-hoc signed. That is fine on the Mac that built it, but a
 
 The app is not sandboxed (a cleaner has to reach other apps' caches), so it can't go on the Mac App Store as it is. Distribution is a direct download.
 
-## Release (a download anyone can open)
+## Sharing without a developer account
+
+The default build is all you need to give PureSweep to someone: send them `macOS/dist/PureSweep.dmg` (AirDrop, Messages, email, a file link or a GitHub release). It runs on Apple silicon and Intel Macs with macOS 14 or later. Don't send a `--native` build, which only runs on the architecture it was built on.
+
+Because it isn't notarized, the recipient approves it once: open it, click **Done** at the warning, then System Settings → Privacy & Security → **Open Anyway**. The DMG includes `How to open PureSweep.txt` with these steps. Only send it to people who trust you, since they are skipping Apple's check.
+
+## Release (optional: notarized, needs a paid Apple Developer account)
 
 One-time setup:
 

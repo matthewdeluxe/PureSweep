@@ -43,6 +43,8 @@ fi
 STAGE="$(mktemp -d)"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
+# Ad-hoc builds are blocked by Gatekeeper after a download; tell the recipient how to open it.
+if [[ -z "${NOTARY_PROFILE:-}" ]]; then cp "Resources/How to open PureSweep.txt" "$STAGE/"; fi
 hdiutil create -quiet -volname PureSweep -srcfolder "$STAGE" -format UDZO -ov dist/PureSweep.dmg
 rm -rf "$STAGE"
 
