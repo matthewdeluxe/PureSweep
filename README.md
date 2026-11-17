@@ -2,6 +2,8 @@
 
 A PC cleaner for Windows, in the spirit of CleanMyPC. It finds junk files, lists installed programs, manages sign-in startup items, shows what hibernation costs you in disk space, and securely shreds files. Built with WPF on .NET Framework 4.8.1 and styled with [ModernWpf](https://github.com/Kinnara/ModernWpf) so it looks like a native Windows 11 app, with light and dark themes and a choice of accent colour.
 
+> **macOS:** a native SwiftUI version lives in [`macOS/`](macOS/README.md). It has the same tools adapted to macOS, plus Large Files, Time Machine snapshots and a menu bar extra.
+
 > **Status: early release (1.0).** Scanning is read-only and safe. Cleaning, shredding, uninstalling and the hibernation toggle delete or change real things, and have had limited real-world testing. Try them on throwaway data first. See [Safety](#safety).
 
 ## Features

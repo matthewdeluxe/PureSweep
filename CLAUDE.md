@@ -64,3 +64,28 @@ light and dark themes, plus silent MSI install / upgrade / uninstall (`msiexec /
 Never exercised: pressing Clean, uninstalling a real program, shredding, toggling hibernation,
 and the interactive setup window. Scanning is read-only and safe to run; cleaning and shredding
 delete real files, so test those against throwaway data.
+
+## macOS version (`macOS/`)
+
+Native SwiftUI app, macOS 14+, plain SwiftPM package (no .xcodeproj). `macOS/build.sh` builds a
+universal release, wraps it into `dist/PureSweep.app` (Info.plist from `Resources/`, icon from
+`tools/make-icon.swift`), signs ad-hoc (or `SIGN_IDENTITY`) and makes `dist/PureSweep.dmg`.
+`macOS/README.md` has the user-facing details.
+
+- Page mapping: Hibernation → Snapshots (Time Machine local snapshots via `tmutil`), Startup →
+  Login Items (launch agents/daemons toggled with `launchctl disable/enable`, never deleted),
+  Settings → the standard Settings scene (⌘,). New: Large Files, menu bar extra, open at login.
+- Admin actions go through `Util.runAsAdmin` (osascript `with administrator privileges`), the
+  macOS counterpart of UAC. Only snapshot deletion and system daemons need it.
+- Not sandboxed. The Trash and Safari's cache need Full Disk Access; `JunkScanner` marks a
+  category `blocked` when listing a root fails with a permission error, and the UI shows a badge.
+- Uninstall moves the app and its leftovers to the Trash (`Trash.move`), falling back to Finder
+  via AppleScript for root-owned apps, which shows Finder's own password prompt.
+- Look: the main window is always dark, with a per-page gradient (`AppModel.Page.palette`/`accent`
+  in `Views/Components.swift`), glass cards, `BigActionButton`, `HeroEmblem`. The window is
+  styled through `WindowStyler` (transparent title bar). Keep MacPaw's names and artwork out.
+- Debug builds: `PURESWEEP_SNAPSHOT=<dir> .build/debug/PureSweep` renders every page to PNG
+  (runs a real, read-only Cleanup scan) and quits. Use it to check layouts without
+  screen-recording permission.
+- Never exercised on macOS either: Clean, Uninstall, Shred, snapshot deletion, login-item
+  switches, open at login.
