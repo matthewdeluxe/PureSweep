@@ -51,7 +51,35 @@ Needs Xcode 15 or later (or its command line tools). There is no Xcode project: 
 
 Output (git-ignored): `macOS/dist/PureSweep.app` and `macOS/dist/PureSweep.dmg` (drag-to-Applications disk image).
 
-The app is ad-hoc signed, so on another Mac Gatekeeper will block the first launch: right-click the app, choose **Open**, then confirm. For real distribution set `SIGN_IDENTITY="Developer ID Application: …"` before building, then notarize the DMG with `xcrun notarytool`. The app is not sandboxed (a cleaner has to reach other apps' caches), so it can't go on the Mac App Store as it is.
+The default build is ad-hoc signed. That is fine on the Mac that built it, but a copy downloaded from the internet is blocked by Gatekeeper. On macOS 15 and later the user has to try to open it, then go to System Settings → Privacy & Security and click **Open Anyway**. To avoid that, publish a notarized build (below).
+
+The app is not sandboxed (a cleaner has to reach other apps' caches), so it can't go on the Mac App Store as it is. Distribution is a direct download.
+
+## Release (a download anyone can open)
+
+One-time setup:
+
+1. Join the [Apple Developer Program](https://developer.apple.com/programs/) (US$99 a year).
+2. In Xcode → Settings → Accounts → Manage Certificates, create a **Developer ID Application** certificate. Check it with `security find-identity -v -p codesigning`.
+3. Create an [app-specific password](https://account.apple.com) for your Apple Account, then store notarization credentials in the keychain:
+
+   ```bash
+   xcrun notarytool store-credentials puresweep --apple-id you@example.com --team-id TEAMID
+   ```
+
+Each release:
+
+1. Bump `CFBundleShortVersionString` and `CFBundleVersion` in `Resources/Info.plist`.
+2. Build, sign, notarize and staple:
+
+   ```bash
+   SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE=puresweep ./macOS/build.sh
+   ```
+
+   The last line should say `accepted` and `source=Notarized Developer ID`.
+3. Upload `macOS/dist/PureSweep.dmg` to a GitHub release (for example `gh release create v1.0 macOS/dist/PureSweep.dmg`).
+
+Users download the DMG, open it and drag PureSweep to Applications. The first launch shows only the normal "downloaded from the internet" confirmation.
 
 For development, `swift build` and run `.build/debug/PureSweep`, or open `macOS/Package.swift` in Xcode.
 
