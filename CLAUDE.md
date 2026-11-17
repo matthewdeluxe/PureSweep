@@ -1,7 +1,7 @@
 # PureSweep
 
-A Windows PC cleaner in the style of CleanMyPC: WPF on .NET Framework 4.8.1, styled with
-ModernWpf 0.9.6 (the WPF port of the WinUI 2 controls). Full-trust desktop app, not UWP.
+A Windows PC cleaner: WPF on .NET Framework 4.8.1, using ModernWpf 0.9.6 (the WPF port of the WinUI 2
+controls). Full-trust desktop app, not UWP. Its look matches the macOS version in `macOS/` (see below).
 
 ## Build
 
@@ -22,6 +22,9 @@ targeting pack. There is no .NET SDK, NuGet restore or WiX involved:
   a finish dialog with a "Launch PureSweep" checkbox (`LAUNCHAPP`, custom action `LaunchApp`),
   and an error dialog. Text there can't contain apostrophes because of the SQL quoting.
 - `tools/make-icon.ps1` regenerates `app.ico` (only runs if the icon is missing).
+- No Windows PC? `dotnet build PureSweep/tools/compile-check` compiles the same C# and XAML on macOS or
+  Linux (SDK-style project, net481, `EnableWindowsTargeting`). It catches code and most XAML errors, not
+  missing `StaticResource` keys or anything else that only fails at runtime.
 
 Prefer the MSI for deployment. The owner's antivirus deleted `PureSweepSetup.exe` (an unsigned
 exe that unpacks other exes). Nothing is code-signed.
@@ -31,12 +34,25 @@ exe that unpacks other exes). Nothing is code-signed.
 - `Core/` - logic with no UI: `Junk.cs` (scan/clean categories and drill-down groups),
   `Apps.cs` (installed programs), `Startup.cs` (sign-in items via the StartupApproved registry
   flags Task Manager uses), `Shredder.cs`, `Util.cs` (helpers and `AppSettings`).
-- `Controls/` - `Hero` (coloured page banner) and `RingGauge` (dashboard dial).
+- `Controls/` - `Hero` (page header), `Emblem` (glowing start-screen circle, optional spinning arc) and
+  `RingGauge` (dashboard dial, also the progress ring around Cleanup's button).
 - `Pages/` - one UserControl per sidebar item: Home, Cleanup, Uninstaller, Startup, Hibernation,
-  Shredder, Settings. `MainWindow` hosts them in a `NavigationView` and caches each instance.
+  Shredder, Settings. `MainWindow` builds a custom sidebar (RadioButtons, style `NavItem`) from its
+  `Pages` table and caches each page instance.
 - `Setup/` - the single-file exe installer (embeds the app as resources).
-- `App.xaml` - shared styles: `Card`, `Push3D` / `Push3DAccent` / `Push3DHero` / `Push3DDanger`
-  (raised buttons that depress), `RoundPush3D`, `TileButton`, and the `Hero` template.
+- `App.xaml` - shared styles: `Card` (glass panel), `Push3D` / `Push3DAccent` / `Push3DHero` /
+  `Push3DDanger` (frosted pill buttons; the old names were kept), `RoundPush3D` (the big glowing round
+  action), `Link`, `TileButton`, `NavItem` / `NavSection`, and the `Hero` and `Emblem` templates.
+
+## Look
+
+Same as the macOS app: always dark (`AppSettings.Apply`), a full-window gradient per page that animates
+on page change, and the page's bright accent pushed into `ThemeManager.Current.AccentColor`, so
+anything using `SystemAccentColor` follows the page. Colours live in `MainWindow.Pages` and match
+`macOS/Sources/PureSweep/Views/Components.swift`. The title bar is extended into the view
+(`ui:TitleBar.ExtendViewIntoTitleBar`), so page content starts 32px down. Cleanup has four screens
+(start, working, results, cleaned) switched by `CleanupPage.UpdateMode()`. The old theme and accent
+settings are still read and written but no longer used.
 
 ## Behaviour worth knowing
 
@@ -65,6 +81,9 @@ Never exercised: pressing Clean, uninstalling a real program, shredding, togglin
 and the interactive setup window. Scanning is read-only and safe to run; cleaning and shredding
 delete real files, so test those against throwaway data.
 
+The dark look (custom sidebar, per-page gradients, Cleanup's four screens) was written on a Mac and has
+only been compiled with `tools/compile-check`, never run. Check every page on Windows before release.
+
 ## macOS version (`macOS/`)
 
 Native SwiftUI app, macOS 14+, plain SwiftPM package (no .xcodeproj). `macOS/build.sh` builds a
@@ -81,7 +100,7 @@ universal release, wraps it into `dist/PureSweep.app` (Info.plist from `Resource
   category `blocked` when listing a root fails with a permission error, and the UI shows a badge.
 - Uninstall moves the app and its leftovers to the Trash (`Trash.move`), falling back to Finder
   via AppleScript for root-owned apps, which shows Finder's own password prompt.
-- Look: the main window is always dark, with a per-page gradient (`AppModel.Page.palette`/`accent`
+- Look (shared with Windows): the main window is always dark, with a per-page gradient (`AppModel.Page.palette`/`accent`
   in `Views/Components.swift`), glass cards, `BigActionButton`, `HeroEmblem`. The window is
   styled through `WindowStyler` (transparent title bar). Keep MacPaw's names and artwork out.
 - Debug builds: `PURESWEEP_SNAPSHOT=<dir> .build/debug/PureSweep` renders every page to PNG

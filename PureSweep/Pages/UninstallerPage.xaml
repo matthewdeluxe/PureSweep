@@ -3,16 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:c="clr-namespace:PureSweep.Controls">
-    <Grid Margin="32,20,32,0">
+    <Grid Margin="32,12,32,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <c:Hero Title="Uninstaller" Subtitle="Remove desktop programs you no longer use." Glyph="&#xE71D;" From="#FFFF9A3D" To="#FFE8452C" />
+        <c:Hero Title="Uninstaller" Subtitle="Remove desktop programs you no longer use." Glyph="&#xE71D;" />
 
-        <Grid Grid.Row="1" Margin="0,12,0,8">
+        <Grid Grid.Row="1" Margin="0,20,0,12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="320" />
                 <ColumnDefinition Width="*" />
@@ -27,11 +27,13 @@
             </ComboBox>
         </Grid>
 
-        <ListView x:Name="List" Grid.Row="2" Margin="-12,0,-16,0" SelectionMode="Single"
+        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="4,6" />
+        <ListView x:Name="List" Grid.Row="2" Margin="4,6" SelectionMode="Single" Background="Transparent"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="12,0" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -44,19 +46,23 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <ui:FontIcon Glyph="&#xE7B8;" FontSize="24" Width="32" Height="32"
-                                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                     Foreground="{StaticResource TextFaint}" />
                         <Image Source="{Binding Icon}" Width="32" Height="32" />
                         <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="{Binding Subtitle}" Style="{StaticResource MutedCaption}" />
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Text="{Binding SizeText}" VerticalAlignment="Center" Margin="0,0,24,0" />
+                        <TextBlock Grid.Column="2" Text="{Binding SizeText}" Foreground="{StaticResource TextSoft}" VerticalAlignment="Center" Margin="0,0,20,0" />
                         <Button Grid.Column="3" Content="Uninstall" Style="{StaticResource Push3D}" Padding="14,6,14,7" Tag="{Binding}" Click="Uninstall_Click" VerticalAlignment="Center" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <ui:ProgressRing x:Name="Ring" Grid.Row="2" Width="48" Height="48" IsActive="True" />
+        <ui:ProgressRing x:Name="Ring" Grid.Row="2" Width="48" Height="48" IsActive="True">
+            <ui:ProgressRing.Foreground>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColor}" />
+            </ui:ProgressRing.Foreground>
+        </ui:ProgressRing>
     </Grid>
 </UserControl>

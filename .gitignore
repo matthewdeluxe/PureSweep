@@ -13,3 +13,7 @@ Thumbs.db
 macOS/.build/
 macOS/dist/
 .DS_Store
+
+# Compile check output (PureSweep/tools/compile-check)
+PureSweep/tools/compile-check/bin/
+PureSweep/tools/compile-check/obj/

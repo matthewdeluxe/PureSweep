@@ -3,20 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:c="clr-namespace:PureSweep.Controls">
-    <Grid Margin="32,20,32,20">
+    <Grid Margin="32,12,32,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <c:Hero Title="Shredder" Subtitle="Overwrite files with random data before deleting them. Most effective on hard disks; SSDs and cloud-synced folders can keep other copies." Glyph="&#xE75C;" From="#FFFF7A59" To="#FFC2185B" />
+        <c:Hero Title="Shredder" Subtitle="Overwrite files with random data before deleting them. Most effective on hard disks; SSDs and cloud-synced folders can keep other copies." Glyph="&#xE75C;" />
 
-        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,12,0,0" Padding="8" AllowDrop="True" Drop="Zone_Drop" DragOver="Zone_DragOver">
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,20,0,0" Padding="8" AllowDrop="True" Drop="Zone_Drop" DragOver="Zone_DragOver">
             <Grid>
                 <StackPanel x:Name="Empty" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Border Width="84" Height="84" CornerRadius="42" HorizontalAlignment="Center"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FFFF7A59" Offset="0" /><GradientStop Color="#FFC2185B" Offset="1" /></LinearGradientBrush></Border.Background><ui:FontIcon Glyph="&#xE75C;" FontSize="36" Foreground="White" /></Border>
-                    <TextBlock Text="Drag files or folders here" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                    <c:Emblem Glyph="&#xE896;" Width="160" Height="160" HorizontalAlignment="Center" />
+                    <TextBlock Text="Drag files or folders here" FontSize="20" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Center" Margin="0,12,0,4" />
                     <TextBlock Text="or use the buttons below" Style="{StaticResource Muted}" HorizontalAlignment="Center" />
                 </StackPanel>
                 <ListView x:Name="List" SelectionMode="Single" Background="Transparent">
@@ -32,7 +32,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding}" Foreground="White" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                 <Button Grid.Column="1" Content="Remove" Style="{StaticResource Push3D}" Padding="12,5,12,6" Tag="{Binding}" Click="Remove_Click" />
                             </Grid>
                         </DataTemplate>

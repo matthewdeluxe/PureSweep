@@ -4,10 +4,12 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:c="clr-namespace:PureSweep.Controls">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,20,32,24">
-            <c:Hero Title="Home" Subtitle="Your PC at a glance." Glyph="&#xE80F;">
-                <Button Content="Smart Scan" Style="{StaticResource Push3DHero}" Click="SmartScan_Click" />
-            </c:Hero>
+        <StackPanel Margin="32,16,32,24">
+            <StackPanel Margin="0,0,0,8">
+                <TextBlock Text="Welcome back" FontSize="30" FontWeight="Bold" Foreground="White" />
+                <TextBlock Text="Here's how your PC is doing. Run Smart Scan to find junk files you can safely remove."
+                           FontSize="16" Foreground="{StaticResource TextSoft}" TextWrapping="Wrap" Margin="0,2,0,0" />
+            </StackPanel>
 
             <!-- live gauges -->
             <UniformGrid Columns="3" Margin="-6,6,-6,0">
@@ -68,7 +70,7 @@
                             <TextBlock x:Name="CleanValue" Text="Not cleaned yet" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                             <TextBlock x:Name="CleanLabel" Text="Last cleanup" Style="{StaticResource MutedCaption}" />
                         </StackPanel>
-                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{StaticResource TextFaint}" />
                     </Grid>
                 </Button>
                 <Button Style="{StaticResource TileButton}" Margin="6" Tag="uninstaller" Click="Tile_Click">
@@ -85,7 +87,7 @@
                             <TextBlock x:Name="AppsValue" Text="Counting…" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="Installed programs" Style="{StaticResource MutedCaption}" />
                         </StackPanel>
-                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{StaticResource TextFaint}" />
                     </Grid>
                 </Button>
                 <Button Style="{StaticResource TileButton}" Margin="6" Tag="startup" Click="Tile_Click">
@@ -102,7 +104,7 @@
                             <TextBlock x:Name="StartupValue" Text="–" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="Startup programs" Style="{StaticResource MutedCaption}" />
                         </StackPanel>
-                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{StaticResource TextFaint}" />
                     </Grid>
                 </Button>
                 <Button Style="{StaticResource TileButton}" Margin="6" Tag="hibernation" Click="Tile_Click">
@@ -119,10 +121,13 @@
                             <TextBlock x:Name="HiberValue" Text="–" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                             <TextBlock Text="Hibernation file" Style="{StaticResource MutedCaption}" />
                         </StackPanel>
-                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <ui:FontIcon Grid.Column="2" Glyph="&#xE76C;" FontSize="12" Foreground="{StaticResource TextFaint}" />
                     </Grid>
                 </Button>
             </UniformGrid>
+
+            <Button Style="{StaticResource RoundPush3D}" Content="Smart Scan" FontSize="18" Click="SmartScan_Click"
+                    HorizontalAlignment="Center" Margin="0,28,0,8" AutomationProperties.Name="Smart Scan" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

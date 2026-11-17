@@ -123,13 +123,13 @@ namespace PureSweep.Core
             catch { }
         }
 
+        /// <summary>
+        /// The window always uses the dark, colourful look (matching the macOS version); MainWindow sets the accent
+        /// colour for each page. Theme and Accent are still read and written so older settings files keep working.
+        /// </summary>
         public static void Apply()
         {
-            ThemeManager.Current.ApplicationTheme =
-                Theme == 1 ? ApplicationTheme.Light : Theme == 2 ? ApplicationTheme.Dark : (ApplicationTheme?)null;
-            Color? accent = null;
-            try { if (Accent != "") accent = (Color)ColorConverter.ConvertFromString(Accent); } catch { }
-            ThemeManager.Current.AccentColor = accent;
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
         }
     }
 }

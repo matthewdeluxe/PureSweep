@@ -3,19 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:c="clr-namespace:PureSweep.Controls">
-    <StackPanel Margin="32,20,32,0">
-        <c:Hero Title="Hibernation" Subtitle="Windows reserves a large hidden file on your system drive so it can hibernate." Glyph="&#xE708;" From="#FF9B7BE0" To="#FF4B2FA8" />
+    <StackPanel Margin="32,12,32,0">
+        <c:Hero Title="Hibernation" Subtitle="Windows reserves a large hidden file on your system drive so it can hibernate." Glyph="&#xE708;" />
 
-        <Border Style="{StaticResource Card}" Margin="0,12,0,0" Padding="24,20">
+        <Border Style="{StaticResource Card}" Margin="0,20,0,0" Padding="24,20">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Border Width="64" Height="64" CornerRadius="16" VerticalAlignment="Center"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FF9B7BE0" Offset="0" /><GradientStop Color="#FF4B2FA8" Offset="1" /></LinearGradientBrush></Border.Background><ui:FontIcon Glyph="&#xE708;" FontSize="30" Foreground="White" /></Border>
+                <Border Width="64" Height="64" CornerRadius="16" VerticalAlignment="Center"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="{DynamicResource SystemAccentColor}" Offset="0" /><GradientStop Color="{DynamicResource SystemAccentColorDark2}" Offset="1" /></LinearGradientBrush></Border.Background><ui:FontIcon Glyph="&#xE708;" FontSize="30" Foreground="White" /></Border>
                 <StackPanel Grid.Column="1" Margin="20,0" VerticalAlignment="Center">
-                    <TextBlock x:Name="StateText" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock x:Name="StateText" FontSize="24" FontWeight="SemiBold" Foreground="White" />
                     <TextBlock x:Name="SizeText" Style="{StaticResource Muted}" />
                 </StackPanel>
                 <Button x:Name="ToggleBtn" Grid.Column="2" MinWidth="190" Style="{StaticResource Push3DAccent}" Click="Toggle_Click" VerticalAlignment="Center" />
