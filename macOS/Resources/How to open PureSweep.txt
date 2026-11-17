@@ -1,0 +1,23 @@
+How to open PureSweep
+=====================
+
+PureSweep isn't from the App Store and isn't notarized by Apple, so the
+first time you open it macOS shows a warning that it "can't be opened" or
+that Apple "could not verify" it. That's expected. You only do this once.
+
+1. Drag PureSweep into the Applications folder (in this window).
+
+2. Open PureSweep from Applications. When the warning appears, click
+   Done. Don't click "Move to Trash".
+
+3. Open System Settings > Privacy & Security. Scroll down to the
+   Security section, where it says PureSweep was blocked, and click
+   Open Anyway. Confirm with your password or Touch ID.
+
+4. Click Open in the last prompt. From now on PureSweep opens normally.
+
+Needs macOS 14 Sonoma or later. Works on Apple silicon and Intel Macs.
+
+Optional: to let PureSweep include the Trash and Safari's cache in its
+scan, turn it on in System Settings > Privacy & Security >
+Full Disk Access.

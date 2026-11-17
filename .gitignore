@@ -8,3 +8,8 @@ PureSweep/Setup/obj/
 .vs/
 *.user
 Thumbs.db
+
+# macOS build output (recreated by macOS/build.sh)
+macOS/.build/
+macOS/dist/
+.DS_Store

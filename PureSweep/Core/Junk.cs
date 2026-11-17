@@ -183,6 +183,7 @@ namespace PureSweep.Core
             }
             // Re-apply the age guard now: a file may have been written to since the scan.
             DateTime cutoff = Cutoff;
+            var emptied = new HashSet<string>(StringComparer.OrdinalIgnoreCase);   // folders this clean deleted from, and their parents
             foreach (JunkGroup g in _groups.Where(g => g.IsChecked))
                 foreach (string f in g.Found)
                 {
@@ -194,10 +195,11 @@ namespace PureSweep.Core
                         if ((fi.Attributes & FileAttributes.ReadOnly) != 0) fi.Attributes = FileAttributes.Normal;
                         fi.Delete();
                         freed += len;
+                        for (string dir = fi.DirectoryName; !string.IsNullOrEmpty(dir) && emptied.Add(dir); dir = System.IO.Path.GetDirectoryName(dir)) { }
                     }
                     catch { /* in use or protected: leave it */ }
                 }
-            foreach (string d in _pruneDirs) PruneEmpty(d, cutoff);
+            foreach (string d in _pruneDirs) PruneEmpty(d, cutoff, emptied);
             return freed;
         }
 
@@ -233,15 +235,20 @@ namespace PureSweep.Core
             }
         }
 
-        static void PruneEmpty(string root, DateTime cutoff)
+        /// <summary>
+        /// Removes empty folders below root (never root itself): those this clean emptied, or older than the cutoff.
+        /// Deleting a file updates its folder's write time, so the date alone would keep every folder just emptied;
+        /// an empty folder an app created recently is still left alone.
+        /// </summary>
+        static void PruneEmpty(string root, DateTime cutoff, HashSet<string> emptied)
         {
             try
             {
                 foreach (DirectoryInfo d in new DirectoryInfo(root).GetDirectories())
                 {
                     if ((d.Attributes & FileAttributes.ReparsePoint) != 0) continue;
-                    PruneEmpty(d.FullName, cutoff);
-                    try { if (d.LastWriteTimeUtc <= cutoff && !d.EnumerateFileSystemInfos().Any()) d.Delete(); } catch { }
+                    PruneEmpty(d.FullName, cutoff, emptied);
+                    try { if ((emptied.Contains(d.FullName) || d.LastWriteTimeUtc <= cutoff) && !d.EnumerateFileSystemInfos().Any()) d.Delete(); } catch { }
                 }
             }
             catch { }
