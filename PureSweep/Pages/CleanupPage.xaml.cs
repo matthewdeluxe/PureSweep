@@ -23,7 +23,6 @@ namespace PureSweep.Pages
         {
             InitializeComponent();
             List.ItemsSource = _cats;
-            AdminBar.Visibility = Util.IsAdmin ? Visibility.Collapsed : Visibility.Visible;
             foreach (JunkCategory c in _cats)
                 c.PropertyChanged += (s, e) =>
                 {
@@ -32,6 +31,7 @@ namespace PureSweep.Pages
                     UpdateTotal();
                 };
             UpdateDisk();
+            UpdateMode();
         }
 
         /// <summary>Moves the progress bar to a 0-100 value; jump = no glide, for the start of a run.</summary>
@@ -56,7 +56,7 @@ namespace PureSweep.Pages
 
         void ShowProgress(double value)
         {
-            WorkFill.Width = WorkTrack.ActualWidth * value / 100;
+            WorkRing.Value = value;
             WorkPct.Text = Math.Round(value) + "%";
         }
 
@@ -68,6 +68,26 @@ namespace PureSweep.Pages
             MainSub.Visibility = sub == null ? Visibility.Collapsed : Visibility.Visible;
             MainBtn.IsEnabled = enabled;
             System.Windows.Automation.AutomationProperties.SetName(MainBtn, sub == null ? label : label + " " + sub);
+            UpdateMode();
+        }
+
+        /// <summary>
+        /// Shows one of the page's four screens, like the macOS version: the start screen, a spinning emblem while
+        /// scanning or cleaning, the results list, and the "cleaned" screen. The texts are shared (the centre
+        /// headline is bound to TotalText and StatusText), so only visibility changes here.
+        /// </summary>
+        void UpdateMode()
+        {
+            bool working = _busy, landing = !_busy && !_scanned, done = !_busy && _scanned && _done;
+            bool results = !working && !landing && !done;
+            Header.Visibility = ListArea.Visibility = results ? Visibility.Visible : Visibility.Collapsed;
+            AdminBar.Visibility = results && !Util.IsAdmin ? Visibility.Visible : Visibility.Collapsed;
+            Center.Visibility = results ? Visibility.Collapsed : Visibility.Visible;
+            Emblem.IsSpinning = working;
+            Emblem.Glyph = done ? "\uE73E" : "\uEA99";   // check mark when cleaned, broom otherwise
+            WorkPct.Visibility = WorkRing.Visibility = working ? Visibility.Visible : Visibility.Collapsed;
+            DiskPanel.Visibility = landing ? Visibility.Visible : Visibility.Collapsed;
+            ReviewLink.Visibility = done ? Visibility.Visible : Visibility.Collapsed;
         }
 
         long Selected => _cats.Sum(c => c.SelectedBytes);
@@ -78,7 +98,7 @@ namespace PureSweep.Pages
             {
                 var d = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory));
                 DiskBar.Value = 100.0 * (d.TotalSize - d.TotalFreeSpace) / d.TotalSize;
-                DiskText.Text = $"{d.Name.TrimEnd('\\')}  {Util.Size(d.TotalFreeSpace)} free of {Util.Size(d.TotalSize)}";
+                DiskText.Text = $"System drive {d.Name.TrimEnd('\\')}  {Util.Size(d.TotalFreeSpace)} free of {Util.Size(d.TotalSize)}";
             }
             catch { DiskText.Text = ""; }
         }
@@ -99,12 +119,11 @@ namespace PureSweep.Pages
         void SetBusy(bool busy, string title = null, string status = null)
         {
             _busy = busy;
-            WorkRow.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
-            DiskText.Visibility = DiskBar.Visibility = busy ? Visibility.Collapsed : Visibility.Visible;
             RescanBtn.IsEnabled = !busy;
             List.IsEnabled = !busy;
             if (title != null) TotalText.Text = title;
             if (status != null) StatusText.Text = status;
+            UpdateMode();
         }
 
         /// <param name="canStop">Let the round button stop the scan. Off for the refresh that follows a clean.</param>
@@ -201,6 +220,13 @@ namespace PureSweep.Pages
                 : "Your PC is clean.";
             SetMain("Rescan");
             RescanBtn.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>From the "cleaned" screen back to the list, to see what was left or pick more.</summary>
+        void Review_Click(object sender, RoutedEventArgs e)
+        {
+            _done = false;
+            UpdateTotal();
         }
 
         void Expand_Click(object sender, RoutedEventArgs e)

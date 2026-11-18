@@ -19,7 +19,7 @@ namespace PureSweep.Controls
         public Brush Stroke { get => (Brush)GetValue(StrokeProperty); set => SetValue(StrokeProperty, value); }
         public double Thickness { get => (double)GetValue(ThicknessProperty); set => SetValue(ThicknessProperty, value); }
 
-        static readonly Brush Track = Frozen(Color.FromArgb(0x38, 0x80, 0x80, 0x80));
+        static readonly Brush Track = Frozen(Color.FromArgb(0x1F, 0xFF, 0xFF, 0xFF));   // faint white, for the dark gradient
         static Brush Frozen(Color c) { var b = new SolidColorBrush(c); b.Freeze(); return b; }
 
         /// <summary>Glides the needle to a new value instead of jumping.</summary>

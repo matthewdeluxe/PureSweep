@@ -2,10 +2,10 @@
 
 A free, open-source cleaner for **Windows** and **macOS**. It finds junk files you can safely remove, uninstalls apps, manages what starts when you log in, shows space the system holds back, and securely shreds files.
 
-Each version is a native app built for its own platform, not a cross-platform wrapper:
+Each version is a native app built for its own platform, not a cross-platform wrapper, and both share the same look: a dark window whose colour changes for each section, frosted panels, and one big round action button per page.
 
-- **Windows:** WPF on .NET Framework 4.8.1, styled with [ModernWpf](https://github.com/Kinnara/ModernWpf) to look like a Windows 11 app, with light and dark themes and a choice of accent colour.
-- **macOS:** SwiftUI for macOS 14 Sonoma and later, with a dark full-window look, a menu bar extra and Apple silicon and Intel support.
+- **Windows:** WPF on .NET Framework 4.8.1, using [ModernWpf](https://github.com/Kinnara/ModernWpf) controls.
+- **macOS:** SwiftUI for macOS 14 Sonoma and later, with a menu bar extra and Apple silicon and Intel support.
 
 <p align="center">
   <img src="docs/screenshots/macos-home.png" width="49%" alt="PureSweep for macOS: Home, with disk, memory and CPU gauges and a Smart Scan button">
@@ -24,8 +24,9 @@ Each version is a native app built for its own platform, not a cross-platform wr
 | **Startup / Login Items** | Turns sign-in items on or off with the same flags as Task Manager. | Turns launch agents and daemons on or off through `launchctl`. |
 | **Hibernation / Snapshots** | Shows the space `hiberfil.sys` uses and turns hibernation on or off. | Lists Time Machine local snapshots and purgeable space, and deletes snapshots. |
 | **Large Files** | — | Finds the biggest files in your home folder. Show in Finder or move to the Trash. |
+| **Maintenance** | Flushes the DNS cache, resets the Microsoft Store cache, rebuilds the font cache, and cleans up Windows Update leftovers (DISM component cleanup). | Flushes the DNS cache, resets Quick Look previews, rebuilds font caches, fixes the "Open With" menu, and rebuilds the Spotlight index. |
 | **Shredder** | Overwrites files or folders with random data (1, 3 or 7 passes), then deletes them. | Same, and shows whether FileVault is on. |
-| **Settings** | Theme, accent colour, keep recent files. | Keep recent files, menu bar extra, open at login, Full Disk Access status. |
+| **Settings** | Keep recent files, cleaning history. | Keep recent files, menu bar extra, open at login, Full Disk Access status. |
 
 Startup and login-item changes never delete anything, so they can always be switched back.
 
@@ -92,6 +93,8 @@ Needs Visual Studio 2022 or the VS Build Tools (MSBuild with Roslyn) and the .NE
 
 Output (git-ignored): `PureSweep\bin\PureSweep.exe`, `PureSweep\dist\PureSweep.msi` and `PureSweep\dist\PureSweepSetup.exe`.
 
+To check that Windows changes compile without a Windows PC, run `dotnet build PureSweep/tools/compile-check` on macOS or Linux (needs the .NET SDK). It can't run the app.
+
 The MSI is built with the Windows Installer COM API and `makecab.exe` (`tools\make-msi.ps1`). Each build gets a new ProductCode, and the fixed UpgradeCode makes it replace any installed version. ModernWpf is referenced as two prebuilt DLLs checked in under `PureSweep\lib`.
 
 ### macOS
@@ -109,11 +112,11 @@ Output (git-ignored): `macOS/dist/PureSweep.app` and `macOS/dist/PureSweep.dmg`,
 ```
 PureSweep/          Windows app (WPF)
   Core/             logic with no UI: junk scanning and cleaning, installed apps, startup items, shredder, helpers
-  Controls/         Hero (page banner) and RingGauge (dashboard dial)
+  Controls/         Hero (page header), Emblem (start-screen glow) and RingGauge (dashboard dial)
   Pages/            one page per sidebar item
   Setup/            single-file exe installer (embeds the app)
-  tools/            MSI builder and icon generator
-  App.xaml          shared styles (cards, raised 3D buttons, tiles)
+  tools/            MSI builder, icon generator and a compile check that runs on macOS or Linux
+  App.xaml          shared styles (glass cards, pill buttons, the big round button, sidebar items)
 macOS/              macOS app (SwiftUI), see macOS/README.md
   Sources/PureSweep/Core/    logic with no UI
   Sources/PureSweep/Views/   one view per page, plus shared components

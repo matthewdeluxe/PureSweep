@@ -122,7 +122,7 @@ final class CleanupModel {
 final class AppModel {
     enum Page: String, CaseIterable, Identifiable {
         case home = "Home", cleanup = "Cleanup", uninstaller = "Uninstaller", loginItems = "Login Items",
-             largeFiles = "Large Files", snapshots = "Snapshots", shredder = "Shredder"
+             largeFiles = "Large Files", snapshots = "Snapshots", maintenance = "Maintenance", shredder = "Shredder"
         var id: String { rawValue }
         var symbol: String {
             switch self {
@@ -132,6 +132,7 @@ final class AppModel {
             case .loginItems: return "power"
             case .largeFiles: return "doc.viewfinder"
             case .snapshots: return "clock.arrow.circlepath"
+            case .maintenance: return "wrench.and.screwdriver"
             case .shredder: return "scissors"
             }
         }

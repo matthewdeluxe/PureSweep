@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compile check for the Windows app on macOS or Linux (needs the .NET SDK, 6 or later):
+        dotnet build PureSweep/tools/compile-check
+    It compiles the same C# and XAML as PureSweep.csproj, so it catches code and most markup errors without
+    Windows. It can't run the app, and it doesn't catch missing StaticResource keys, which only fail at runtime.
+    Real builds still use build.ps1 on Windows.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RootNamespace>PureSweep</RootNamespace>
+    <AssemblyName>PureSweep</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <App>$(MSBuildThisFileDirectory)../../</App>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ModernWpf"><HintPath>$(App)lib/ModernWpf.dll</HintPath></Reference>
+    <Reference Include="ModernWpf.Controls"><HintPath>$(App)lib/ModernWpf.Controls.dll</HintPath></Reference>
+    <ApplicationDefinition Include="$(App)App.xaml" Link="App.xaml" />
+    <Page Include="$(App)MainWindow.xaml" Link="MainWindow.xaml" />
+    <Page Include="$(App)Pages/*.xaml" Link="Pages/%(Filename)%(Extension)" />
+    <Compile Include="$(App)*.cs;$(App)Core/*.cs;$(App)Controls/*.cs" />
+    <Compile Include="$(App)Pages/*.cs" Link="Pages/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

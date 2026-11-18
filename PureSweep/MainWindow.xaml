@@ -3,47 +3,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
+        ui:TitleBar.ExtendViewIntoTitleBar="True"
         Title="PureSweep" Width="1100" Height="740" MinWidth="860" MinHeight="580"
+        Background="#FF0F0C1E" Foreground="White"
         WindowStartupLocation="CenterScreen">
-    <ui:NavigationView x:Name="Nav"
-                       PaneDisplayMode="Left"
-                       OpenPaneLength="232"
-                       IsBackButtonVisible="Collapsed"
-                       IsSettingsVisible="True"
-                       PaneTitle="PureSweep"
-                       SelectionChanged="Nav_SelectionChanged">
-        <ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Content="Home" Tag="home">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xE80F;" />
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Cleanup" Tag="cleanup">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xEA99;" />
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Uninstaller" Tag="uninstaller">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xE71D;" />
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Startup" Tag="startup">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xE7E8;" />
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Hibernation" Tag="hibernation">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xE708;" />
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Shredder" Tag="shredder">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xE75C;" />
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-        </ui:NavigationView.MenuItems>
-        <ContentControl x:Name="Host" Focusable="False" />
-    </ui:NavigationView>
+    <Grid>
+        <!-- Full-window background: the page gradient, an accent glow, and a dark corner. Brushes are set in code. -->
+        <Rectangle x:Name="BgGradient" />
+        <Rectangle x:Name="BgGlow" />
+        <Rectangle>
+            <Rectangle.Fill>
+                <RadialGradientBrush Center="0,1" GradientOrigin="0,1" RadiusX="0.75" RadiusY="0.9">
+                    <GradientStop Color="#59000000" Offset="0" />
+                    <GradientStop Color="Transparent" Offset="1" />
+                </RadialGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="216" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar on a darker translucent strip -->
+            <Border Background="#38000000" BorderBrush="#14FFFFFF" BorderThickness="0,0,1,0">
+                <DockPanel Margin="10,0,10,14">
+                    <StackPanel DockPanel.Dock="Top" Margin="12,44,0,6">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon x:Name="LogoIcon" Glyph="&#xEA99;" FontSize="15" Foreground="White" />
+                            <TextBlock Text="PureSweep" FontSize="15" FontWeight="SemiBold" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <TextBlock x:Name="AdminText" Text="Administrator" FontSize="11" Foreground="#99FFFFFF" Margin="23,2,0,0" Visibility="Collapsed" />
+                    </StackPanel>
+                    <StackPanel x:Name="BottomNav" DockPanel.Dock="Bottom" />
+                    <StackPanel x:Name="NavList" />
+                </DockPanel>
+            </Border>
+
+            <ContentControl x:Name="Host" Grid.Column="1" Focusable="False" Margin="0,32,0,0" Foreground="White" />
+        </Grid>
+    </Grid>
 </Window>

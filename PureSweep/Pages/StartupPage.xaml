@@ -3,17 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:c="clr-namespace:PureSweep.Controls">
-    <Grid Margin="32,20,32,0">
+    <Grid Margin="32,12,32,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <c:Hero x:Name="Banner" Title="Startup" Subtitle="Programs that launch when you sign in. Disabling one is reversible." Glyph="&#xE7E8;" From="#FF3CCB7F" To="#FF0A8F7A">
+        <c:Hero x:Name="Banner" Title="Startup" Subtitle="Programs that launch when you sign in. Disabling one is reversible." Glyph="&#xE7E8;">
             <Button Content="Refresh" Style="{StaticResource Push3DHero}" Click="Refresh_Click" />
         </c:Hero>
 
-        <ScrollViewer Grid.Row="1" Margin="0,12,-16,0" Padding="0,0,16,0" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" Margin="0,20,-16,0" Padding="0,0,16,0" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="List" Margin="0,0,0,20">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -25,7 +25,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Opacity="{Binding RowOpacity}" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Text="{Binding Command}" Style="{StaticResource MutedCaption}" ToolTip="{Binding Command}" Margin="0,2,0,0" />
                                     <TextBlock Text="{Binding Location}" Style="{StaticResource MutedCaption}" />
                                 </StackPanel>

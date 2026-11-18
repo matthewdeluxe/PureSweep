@@ -4,42 +4,35 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:c="clr-namespace:PureSweep.Controls">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,20,32,24">
-            <c:Hero Title="Settings" Subtitle="Theme, accent colour and cleaning behaviour." Glyph="&#xE713;" From="#FF8494A3" To="#FF46525E" />
+        <StackPanel Margin="32,12,32,24" MaxWidth="760" HorizontalAlignment="Left">
+            <c:Hero Title="Settings" Subtitle="Cleaning behaviour and history." Glyph="&#xE713;" />
 
-            <Border Style="{StaticResource Card}" Margin="0,12,0,0" Padding="20,16">
-                <StackPanel>
-                    <TextBlock Text="App theme" FontWeight="SemiBold" Margin="0,0,0,8" />
-                    <RadioButton x:Name="ThemeSystem" Content="Use Windows setting" GroupName="theme" Tag="0" Checked="Theme_Checked" />
-                    <RadioButton x:Name="ThemeLight" Content="Light" GroupName="theme" Tag="1" Checked="Theme_Checked" />
-                    <RadioButton x:Name="ThemeDark" Content="Dark" GroupName="theme" Tag="2" Checked="Theme_Checked" />
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource Card}" Margin="0,8,0,0" Padding="20,16">
-                <StackPanel>
-                    <TextBlock Text="Accent color" FontWeight="SemiBold" Margin="0,0,0,10" />
-                    <WrapPanel x:Name="Swatches" />
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource Card}" Margin="0,8,0,0" Padding="20,16">
+            <Border Style="{StaticResource Card}" Margin="0,20,0,0" Padding="20,16">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Keep recent temporary files" FontWeight="SemiBold" />
+                        <TextBlock Text="Keep recent temporary files" FontWeight="SemiBold" Foreground="White" />
                         <TextBlock Text="Skip temp and log files changed in the last 24 hours, since running apps and installers may still need them."
                                    Style="{StaticResource MutedCaption}" TextWrapping="Wrap" Margin="0,2,0,0" />
                     </StackPanel>
-                    <ui:ToggleSwitch x:Name="KeepRecent" Grid.Column="1" Toggled="KeepRecent_Toggled" MinWidth="0" Margin="16,0,0,0" />
+                    <ui:ToggleSwitch x:Name="KeepRecent" Grid.Column="1" Toggled="KeepRecent_Toggled" MinWidth="0" Margin="16,0,0,0"
+                                     OnContent="" OffContent="" AutomationProperties.Name="Keep recent temporary files" />
                 </Grid>
             </Border>
 
-            <TextBlock Text="About" FontWeight="SemiBold" Margin="0,24,0,4" />
-            <TextBlock Text="PureSweep 1.0  •  Built with WPF and ModernWpf (WinUI 2 styles)" Style="{StaticResource Muted}" />
+            <Border Style="{StaticResource Card}" Margin="0,8,0,0" Padding="20,16">
+                <StackPanel>
+                    <TextBlock Text="Cleaning history" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,6" />
+                    <TextBlock x:Name="LastText" Style="{StaticResource Muted}" />
+                    <TextBlock x:Name="TotalText" Style="{StaticResource Muted}" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="About" FontWeight="SemiBold" Foreground="White" Margin="0,24,0,4" />
+            <TextBlock Text="PureSweep 1.0  •  Built with WPF and ModernWpf. Also available for macOS." Style="{StaticResource Muted}" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>
