@@ -70,6 +70,7 @@ struct MainView: View {
                 case .loginItems: LoginItemsView()
                 case .largeFiles: LargeFilesView()
                 case .snapshots: SnapshotsView()
+                case .maintenance: MaintenanceView()
                 case .shredder: ShredderView()
                 }
             }
@@ -93,7 +94,7 @@ private struct Sidebar: View {
     @Environment(AppModel.self) private var model
     private let sections: [(String?, [AppModel.Page])] = [
         (nil, [.home]),
-        ("Cleanup", [.cleanup, .snapshots]),
+        ("Cleanup", [.cleanup, .snapshots, .maintenance]),
         ("Applications", [.uninstaller, .loginItems]),
         ("Files", [.largeFiles, .shredder]),
     ]

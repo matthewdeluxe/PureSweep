@@ -24,6 +24,7 @@ Each version is a native app built for its own platform, not a cross-platform wr
 | **Startup / Login Items** | Turns sign-in items on or off with the same flags as Task Manager. | Turns launch agents and daemons on or off through `launchctl`. |
 | **Hibernation / Snapshots** | Shows the space `hiberfil.sys` uses and turns hibernation on or off. | Lists Time Machine local snapshots and purgeable space, and deletes snapshots. |
 | **Large Files** | — | Finds the biggest files in your home folder. Show in Finder or move to the Trash. |
+| **Maintenance** | Flushes the DNS cache, resets the Microsoft Store cache, rebuilds the font cache, and cleans up Windows Update leftovers (DISM component cleanup). | Flushes the DNS cache, resets Quick Look previews, rebuilds font caches, fixes the "Open With" menu, and rebuilds the Spotlight index. |
 | **Shredder** | Overwrites files or folders with random data (1, 3 or 7 passes), then deletes them. | Same, and shows whether FileVault is on. |
 | **Settings** | Keep recent files, cleaning history. | Keep recent files, menu bar extra, open at login, Full Disk Access status. |
 

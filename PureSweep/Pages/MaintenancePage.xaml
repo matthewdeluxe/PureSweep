@@ -1,0 +1,19 @@
+<UserControl x:Class="PureSweep.Pages.MaintenancePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:PureSweep.Controls">
+    <!-- System caches that are reset with a command rather than cleaned as files. Rows are built in code from Maintenance.All. -->
+    <Grid Margin="32,12,32,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <c:Hero Title="Maintenance" Subtitle="Reset system caches that can cause glitches." Glyph="&#xE90F;" />
+        <TextBlock Grid.Row="1" Style="{StaticResource Muted}" Margin="0,16,0,12"
+                   Text="These don't free much space. Each one resets a cache Windows rebuilds on its own, which fixes problems like websites not loading, broken fonts or a Store that won't download. Run one when you have that problem." />
+        <ScrollViewer Grid.Row="2" Margin="0,0,-16,0" Padding="0,0,16,0" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="Rows" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

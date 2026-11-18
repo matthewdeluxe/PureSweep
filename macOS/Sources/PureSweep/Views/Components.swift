@@ -16,6 +16,7 @@ extension AppModel.Page {
         case .home: return [Color(hex: 0x1A1440), Color(hex: 0x3B1D7A), Color(hex: 0x6B2FA8)]
         case .cleanup: return [Color(hex: 0x062A3F), Color(hex: 0x0B5372), Color(hex: 0x1293A8)]
         case .snapshots: return [Color(hex: 0x111633), Color(hex: 0x23307A), Color(hex: 0x3F52C4)]
+        case .maintenance: return [Color(hex: 0x221A03), Color(hex: 0x5C4508), Color(hex: 0x9C7A12)]
         case .uninstaller: return [Color(hex: 0x2A0716), Color(hex: 0x6E1236), Color(hex: 0xB0305A)]
         case .loginItems: return [Color(hex: 0x03241F), Color(hex: 0x0A5546), Color(hex: 0x13917A)]
         case .largeFiles: return [Color(hex: 0x2B0D05), Color(hex: 0x7A2A0C), Color(hex: 0xC4561A)]
@@ -28,6 +29,7 @@ extension AppModel.Page {
         case .home: return Color(hex: 0xC79BFF)
         case .cleanup: return Color(hex: 0x5CE1E6)
         case .snapshots: return Color(hex: 0x9DB0FF)
+        case .maintenance: return Color(hex: 0xFFD86B)
         case .uninstaller: return Color(hex: 0xFF8FB0)
         case .loginItems: return Color(hex: 0x6FF0C8)
         case .largeFiles: return Color(hex: 0xFFB36B)

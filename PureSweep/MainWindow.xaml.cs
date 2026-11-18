@@ -30,6 +30,7 @@ namespace PureSweep
             new PageInfo { Tag = "home", Title = "Home", Glyph = "", Palette = new[] { C(0x1A1440), C(0x3B1D7A), C(0x6B2FA8) }, Accent = C(0xC79BFF) },
             new PageInfo { Tag = "cleanup", Title = "Cleanup", Glyph = "", Section = "CLEANUP", Palette = new[] { C(0x062A3F), C(0x0B5372), C(0x1293A8) }, Accent = C(0x5CE1E6) },
             new PageInfo { Tag = "hibernation", Title = "Hibernation", Glyph = "", Section = "CLEANUP", Palette = new[] { C(0x111633), C(0x23307A), C(0x3F52C4) }, Accent = C(0x9DB0FF) },
+            new PageInfo { Tag = "maintenance", Title = "Maintenance", Glyph = "\uE90F", Section = "CLEANUP", Palette = new[] { C(0x221A03), C(0x5C4508), C(0x9C7A12) }, Accent = C(0xFFD86B) },
             new PageInfo { Tag = "uninstaller", Title = "Uninstaller", Glyph = "", Section = "PROGRAMS", Palette = new[] { C(0x2A0716), C(0x6E1236), C(0xB0305A) }, Accent = C(0xFF8FB0) },
             new PageInfo { Tag = "startup", Title = "Startup", Glyph = "", Section = "PROGRAMS", Palette = new[] { C(0x03241F), C(0x0A5546), C(0x13917A) }, Accent = C(0x6FF0C8) },
             new PageInfo { Tag = "shredder", Title = "Shredder", Glyph = "", Section = "FILES", Palette = new[] { C(0x111214), C(0x2A2D35), C(0x4A505E) }, Accent = C(0xC9D1E0) },
@@ -105,6 +106,7 @@ namespace PureSweep
                     case "uninstaller": page = new UninstallerPage(); break;
                     case "startup": page = new StartupPage(); break;
                     case "hibernation": page = new HibernationPage(); break;
+                    case "maintenance": page = new MaintenancePage(); break;
                     case "shredder": page = new ShredderPage(); break;
                     default: page = new SettingsPage(); break;
                 }

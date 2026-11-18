@@ -33,11 +33,11 @@ exe that unpacks other exes). Nothing is code-signed.
 
 - `Core/` - logic with no UI: `Junk.cs` (scan/clean categories and drill-down groups),
   `Apps.cs` (installed programs), `Startup.cs` (sign-in items via the StartupApproved registry
-  flags Task Manager uses), `Shredder.cs`, `Util.cs` (helpers and `AppSettings`).
+  flags Task Manager uses), `Shredder.cs`, `Maintenance.cs` (cache-reset commands), `Util.cs` (helpers and `AppSettings`).
 - `Controls/` - `Hero` (page header), `Emblem` (glowing start-screen circle, optional spinning arc) and
   `RingGauge` (dashboard dial, also the progress ring around Cleanup's button).
 - `Pages/` - one UserControl per sidebar item: Home, Cleanup, Uninstaller, Startup, Hibernation,
-  Shredder, Settings. `MainWindow` builds a custom sidebar (RadioButtons, style `NavItem`) from its
+  Maintenance, Shredder, Settings. `MainWindow` builds a custom sidebar (RadioButtons, style `NavItem`) from its
   `Pages` table and caches each page instance.
 - `Setup/` - the single-file exe installer (embeds the app as resources).
 - `App.xaml` - shared styles: `Card` (glass panel), `Push3D` / `Push3DAccent` / `Push3DHero` /
@@ -94,8 +94,12 @@ universal release, wraps it into `dist/PureSweep.app` (Info.plist from `Resource
 - Page mapping: Hibernation → Snapshots (Time Machine local snapshots via `tmutil`), Startup →
   Login Items (launch agents/daemons toggled with `launchctl disable/enable`, never deleted),
   Settings → the standard Settings scene (⌘,). New: Large Files, menu bar extra, open at login.
+- Maintenance (both platforms) runs fixed commands from `MaintenanceTask.all` / `MaintenanceTask.All`, never
+  file deletion by PureSweep itself. Deliberately left out: RAM "cleaning" (`purge`), Prefetch and registry cleaning.
+  Windows runs admin tasks through a `runas` process (UAC) unless already elevated. Only the Mac Quick Look reset has
+  been run; the other commands are untested from the app.
 - Admin actions go through `Util.runAsAdmin` (osascript `with administrator privileges`), the
-  macOS counterpart of UAC. Only snapshot deletion and system daemons need it.
+  macOS counterpart of UAC. Snapshot deletion, system daemons and the DNS and Spotlight resets need it.
 - Not sandboxed. The Trash and Safari's cache need Full Disk Access; `JunkScanner` marks a
   category `blocked` when listing a root fails with a permission error, and the UI shows a badge.
 - Uninstall moves the app and its leftovers to the Trash (`Trash.move`), falling back to Finder
